@@ -2,7 +2,7 @@
 import { businessInfo } from '../data/businessInfo'
 import { useCart } from '../composables/useCart'
 
-const { totalItems } = useCart()
+const { totalItems, isCartAnimating } = useCart()
 </script>
 
 <template>
@@ -40,7 +40,13 @@ const { totalItems } = useCart()
           </li>
         </ul>
         <div class="d-flex align-items-center mt-3 mt-lg-0 gap-3">
-          <button class="btn btn-outline-secondary position-relative border-0 shadow-none fs-5 d-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
+          <button 
+            class="btn btn-outline-secondary position-relative border-0 shadow-none fs-5 d-flex align-items-center" 
+            :class="{ 'cart-bounce': isCartAnimating }"
+            data-bs-toggle="offcanvas" 
+            data-bs-target="#cartOffcanvas" 
+            aria-controls="cartOffcanvas"
+          >
             <i class="bi bi-cart3 text-dark"></i>
             <span v-if="totalItems > 0" class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-primary-custom" style="font-size: 0.65rem;">
               {{ totalItems }}
@@ -69,5 +75,23 @@ const { totalItems } = useCart()
     padding-top: 1rem;
     padding-bottom: 1rem;
   }
+}
+
+/* Animación de feedback para el carrito */
+.cart-bounce {
+  animation: bounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  color: var(--primary-color) !important;
+}
+
+.cart-bounce i {
+  color: var(--primary-color) !important;
+}
+
+@keyframes bounce {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.35); }
+  60% { transform: scale(0.9); }
+  80% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 </style>

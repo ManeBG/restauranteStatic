@@ -1,6 +1,6 @@
 <script setup>
 import { useCart } from '../composables/useCart'
-const { toastMessage, showToast } = useCart()
+const { toastMessage, toastSubtitle, showToast } = useCart()
 </script>
 
 <template>
@@ -11,11 +11,16 @@ const { toastMessage, showToast } = useCart()
          aria-live="assertive" 
          aria-atomic="true">
       <div class="d-flex">
-        <div class="toast-body fw-medium py-3">
-          <i class="bi bi-check-circle-fill text-success me-2"></i>
-          {{ toastMessage }}
+        <div class="toast-body py-3 w-100">
+          <div class="d-flex align-items-center mb-1">
+            <i class="bi bi-check-circle-fill text-success ms-1 me-2 fs-5"></i>
+            <span class="fs-6 fw-bold">{{ toastMessage }}</span>
+          </div>
+          <div v-if="toastSubtitle" class="text-white-50 ms-4 ps-1 small lh-sm">
+            {{ toastSubtitle }}
+          </div>
         </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto shadow-none" @click="showToast = false" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white me-2 mt-3 shadow-none align-self-start" @click="showToast = false" aria-label="Close"></button>
       </div>
     </div>
   </div>
@@ -24,6 +29,7 @@ const { toastMessage, showToast } = useCart()
 <style scoped>
 .toast {
   transition: opacity 0.3s ease, transform 0.3s ease;
-  border-radius: 50px;
+  border-radius: 12px;
+  min-width: 280px;
 }
 </style>

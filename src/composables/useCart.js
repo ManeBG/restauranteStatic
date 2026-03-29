@@ -2,7 +2,10 @@ import { ref, computed, watch } from 'vue'
 
 const cart = ref([])
 const toastMessage = ref('')
+const toastSubtitle = ref('')
 const showToast = ref(false)
+const isCartAnimating = ref(false)
+const hasAutoOpened = ref(false)
 
 // Recuperar carrito de localStorage al iniciar
 const savedCart = localStorage.getItem('demo-restaurante-cart')
@@ -29,8 +32,28 @@ export function useCart() {
       cart.value.push({ ...product, quantity })
     }
     
-    // Disparar feedback visual
-    triggerToast(`¡"${product.name}" agregado al carrito!`)
+    // Disparar feedback visual y toast
+    triggerToast(
+      `¡"${product.name}" agregado!`,
+      "Toca el icono del carrito para ver tu pedido."
+    )
+    
+    // Animar ícono de carrito
+    isCartAnimating.value = true
+    setTimeout(() => {
+      isCartAnimating.value = false
+    }, 600)
+    
+    // Abrir automáticamente el carrito en móvil solo la primera vez que agrega
+    if (!hasAutoOpened.value && window.innerWidth < 992) {
+      hasAutoOpened.value = true
+      setTimeout(() => {
+        const cartBtn = document.querySelector('[data-bs-target="#cartOffcanvas"]')
+        if (cartBtn) {
+          cartBtn.click()
+        }
+      }, 500) // Pequeño retraso para que la animación suceda y luego se abra
+    }
   }
 
   const removeFromCart = (productId) => {
@@ -51,6 +74,7 @@ export function useCart() {
 
   const clearCart = () => {
     cart.value = []
+    hasAutoOpened.value = false // Restaurar la capacidad de auto-abrir si vacía todo
   }
 
   const totalItems = computed(() => {
@@ -61,15 +85,16 @@ export function useCart() {
     return cart.value.reduce((total, item) => total + (item.price * item.quantity), 0)
   })
 
-  // Funcionalidad simple de toast para feedback
   let toastTimer = null
-  const triggerToast = (msg) => {
+  const triggerToast = (msg, subtitle = '') => {
     toastMessage.value = msg
+    toastSubtitle.value = subtitle
     showToast.value = true
+    
     if (toastTimer) clearTimeout(toastTimer)
     toastTimer = setTimeout(() => {
       showToast.value = false
-    }, 3000)
+    }, 3500) // Ligeramente más largo para dar tiempo a leer
   }
 
   return {
@@ -81,6 +106,9 @@ export function useCart() {
     totalItems,
     cartTotal,
     toastMessage,
-    showToast
+    toastSubtitle,
+    showToast,
+    isCartAnimating
   }
 }
+
